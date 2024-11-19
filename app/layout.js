@@ -11,7 +11,7 @@ export default function RootLayout({ children }) {
         <div className="flex h-full">
           {/* Sidebar */}
           <aside className="w-64 bg-gray-800 text-white flex flex-col p-4">
-            <h2 className="text-lg font-bold mb-4">QuizApp Menu</h2>
+            <h2 className="text-lg font-bold mb-4">Menu Główne</h2>
             <nav className="flex flex-col gap-4">
               <Link href="/" className="flex items-center gap-2 hover:bg-gray-700 p-2 rounded">
                 <FaHome />
