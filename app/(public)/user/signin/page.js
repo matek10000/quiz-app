@@ -1,25 +1,47 @@
 'use client';
 
-import { useState } from 'react';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'; // Importujemy funkcje Firebase do logowania
-import { useRouter } from 'next/navigation'; // Importujemy useRouter do przekierowań
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/lib/AuthContext'; // Jeśli masz dostęp do contextu auth
+import { FaExclamationCircle } from 'react-icons/fa'; // Ikona do błędów
+import { signInWithEmailAndPassword, getAuth } from 'firebase/auth';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null); // Dodajemy stan na błędy
-  const router = useRouter(); // Hook do nawigacji po zalogowaniu
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth(); // Pobieramy użytkownika z contextu autoryzacji
+  const router = useRouter();
+
+  // Sprawdzamy, czy użytkownik jest już zalogowany
+  useEffect(() => {
+    if (user) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const returnUrl = urlParams.get('returnUrl') || '/'; // Domyślnie przekierowanie na stronę główną
+      router.push(returnUrl); // Jeśli użytkownik jest zalogowany, przekierowujemy go do returnUrl
+    }
+  }, [user, router]);
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    const auth = getAuth(); // Pobieramy instancję Firebase Authentication
+    setLoading(true);
+    setError(''); // Resetujemy błędy
 
     try {
-      await signInWithEmailAndPassword(auth, email, password); // Próbujemy zalogować się za pomocą emaila i hasła
-      router.push('/protected/user/profile'); // Po zalogowaniu przekierowujemy na stronę profilu
+      // Wykonanie logowania z FireBase
+      const auth = await signInWithEmailAndPassword(getAuth(), email, password);
+
+      // Pobiera returnUrl z URL (jeśli istnieje)
+      const urlParams = new URLSearchParams(window.location.search);
+      const returnUrl = urlParams.get('returnUrl') || '/'; // Póki co przekierowanie na stronę główną
+
+      router.push(returnUrl); // Przekierowujemy użytkownika na returnUrl lub główną stronę
     } catch (error) {
-      setError(error.message); // Ustawiamy błąd, jeśli coś poszło nie tak
-      console.error('Logowanie nie powiodło się:', error.message); // Konsola do debugowania
+      // Jeśli logowanie się nie powiedzie, ustawiamy błąd
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -27,7 +49,15 @@ export default function SignIn() {
     <div className="flex items-center justify-center h-screen bg-gray-100">
       <form onSubmit={handleSignIn} className="bg-white p-6 rounded shadow-md w-full max-w-sm">
         <h2 className="text-2xl font-bold mb-4 text-center">Logowanie</h2>
-        {error && <div className="mb-4 text-red-600">{error}</div>} {/* Wyświetlanie błędów */}
+        
+        {/* Wyświetlanie błędu, jeśli jest */}
+        {error && (
+          <div className="mb-4 bg-red-100 text-red-800 p-3 rounded flex items-center">
+            <FaExclamationCircle className="mr-2" />
+            {error}
+          </div>
+        )}
+        
         <div className="mb-4">
           <label htmlFor="email" className="block text-gray-700 mb-2">E-mail</label>
           <input
@@ -55,8 +85,9 @@ export default function SignIn() {
         <button
           type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          disabled={loading}
         >
-          Zaloguj się
+          {loading ? 'Logowanie...' : 'Zaloguj się'}
         </button>
       </form>
     </div>
