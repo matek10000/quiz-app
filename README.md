@@ -15,7 +15,7 @@ QuizApp to aplikacja webowa zbudowana w frameworku Next.js, wykorzystująca Fire
 
 ## Instalacja
    ```bash
-   git clone https://github.com/TwojeRepo/QuizApp.git
+   git clone https://github.com/matek10000/quiz-app.git
    cd QuizApp
 
    Zainstaluj wymagane zależności:
@@ -27,4 +27,4 @@ QuizApp to aplikacja webowa zbudowana w frameworku Next.js, wykorzystująca Fire
    npm run dev
    ```
 
-   
+
