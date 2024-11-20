@@ -23,6 +23,8 @@ QuizApp to aplikacja webowa zbudowana w frameworku Next.js, wykorzystująca Fire
    npm install next react react-dom tailwindcss
    npm install react-icons
    npm install firebase
+   npm install @next/env
+
    
    npm run dev
    ```

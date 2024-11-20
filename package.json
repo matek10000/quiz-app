@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@next/env": "^15.0.3",
     "firebase": "^11.0.2",
     "next": "^15.0.3",
     "preline": "^2.5.1",
