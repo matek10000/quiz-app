@@ -4,13 +4,13 @@ import { getAnalytics, isSupported } from 'firebase/analytics';
 
 // Konfiguracja Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyAafIXPTq1RwwXqUXoKBU1GV7zuMe5nOOI",
-  authDomain: "quizapp-matek10000.firebaseapp.com",
-  projectId: "quizapp-matek10000",
-  storageBucket: "quizapp-matek10000.firebasestorage.app",
-  messagingSenderId: "392344007567",
-  appId: "1:392344007567:web:096ea00c9298971917d1fa",
-  measurementId: "G-N5TD49GQJB",
+  apiKey: process.env.NEXT_PUBLIC_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_MEASUREMENT_ID,
 };
 
 // Inicjalizujemy Firebase
