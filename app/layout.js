@@ -27,11 +27,11 @@ export default function RootLayout({ children }) {
                   <FaUser />
                   <span>Załóż konto</span>
                 </Link>
-                <Link href="/protected/user/profile" className="flex items-center gap-2 hover:bg-gray-700 p-2 rounded">
+                <Link href="/user/profile" className="flex items-center gap-2 hover:bg-gray-700 p-2 rounded">
                   <FaUserEdit />
                   <span>Profil</span>
                 </Link>
-                <Link href="/protected/user/signout" className="flex items-center gap-2 hover:bg-gray-700 p-2 rounded">
+                <Link href="/user/signout" className="flex items-center gap-2 hover:bg-gray-700 p-2 rounded">
                   <FaSignOutAlt />
                   <span>Wyloguj się</span>
                 </Link>
@@ -54,7 +54,7 @@ export default function RootLayout({ children }) {
               </header>
 
               {/* Main Content Area */}
-              <main className="flex-1 overflow-y-auto p-6 bg-gray-50">{children}</main>
+              <main className="flex-1 overflow-y-auto p-6 bg-gray-50 text-black">{children}</main>
 
               {/* Footer */}
               <footer className="bg-gray-800 text-white text-center p-4">

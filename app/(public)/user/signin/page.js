@@ -18,7 +18,7 @@ export default function SignIn() {
   useEffect(() => {
     if (user) {
       const urlParams = new URLSearchParams(window.location.search);
-      const returnUrl = urlParams.get('returnUrl') || '/'; // Domyślnie przekierowanie na stronę główną
+      const returnUrl = urlParams.get('returnUrl') || '/user/profile'; // Domyślnie przekierowanie na stronę główną
       router.push(returnUrl); // Jeśli użytkownik jest zalogowany, przekierowujemy go do returnUrl
     }
   }, [user, router]);
