@@ -1,5 +1,6 @@
 // Importujemy wymagane funkcje
 import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 
 // Konfiguracja Firebase
@@ -16,17 +17,20 @@ const firebaseConfig = {
 // Inicjalizujemy Firebase
 const app = initializeApp(firebaseConfig);
 
+// Inicjalizacja Firebase Authentication
+const auth = getAuth(app);
+
 // Inicjalizacja Analytics w środowisku przeglądarki
 let analytics = null;
-if (typeof window !== "undefined") {
+if (typeof window !== 'undefined') {
   isSupported().then((supported) => {
     if (supported) {
       analytics = getAnalytics(app);
     } else {
-      console.warn("Firebase Analytics nie jest obsługiwane w tym środowisku.");
+      console.warn('Firebase Analytics nie jest obsługiwane w tym środowisku.');
     }
   });
 }
 
-// Eksportujemy aplikację i Analytics
-export { app, analytics };
+// Eksportujemy aplikację, Authentication i Analytics
+export { app, auth, analytics };
