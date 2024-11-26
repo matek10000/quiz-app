@@ -54,7 +54,7 @@ export default function RootLayout({ children }) {
               </header>
 
               {/* Main Content Area */}
-              <main className="flex-1 overflow-y-auto p-6 bg-gray-50">{children}</main>
+              <main className="flex-1 overflow-y-auto p-6 bg-gray-50 text-black">{children}</main>
 
               {/* Footer */}
               <footer className="bg-gray-800 text-white text-center p-4">
