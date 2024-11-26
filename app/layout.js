@@ -4,6 +4,7 @@ import { AuthProvider } from './lib/AuthContext'; // Dodanie AuthProvider dla za
 import { FaUser, FaSignInAlt, FaSignOutAlt, FaHome, FaUserEdit } from 'react-icons/fa';
 import './globals.css';
 import Link from 'next/link';
+import UserMenu from '@/app/components/user/UserMenu'; // Importujemy komponent UserMenu
 
 export default function RootLayout({ children }) {
   return (
@@ -36,6 +37,11 @@ export default function RootLayout({ children }) {
                   <span>Wyloguj się</span>
                 </Link>
               </nav>
+
+              {/* Dodajemy UserMenu na dole sidebaru */}
+              <div className="mt-auto">
+                <UserMenu />
+              </div>
             </aside>
 
             {/* Main Content */}
