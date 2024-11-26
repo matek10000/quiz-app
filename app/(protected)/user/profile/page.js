@@ -5,7 +5,7 @@ import { useAuth } from '@/app/lib/AuthContext';
 import { updateProfile } from 'firebase/auth'; // Importujemy metodę do aktualizacji profilu
 
 export default function ProfilePage() {
-  const { user } = useAuth(); // Pobieramy użytkownika z contextu
+  const { user, setUser } = useAuth(); // Pobieramy użytkownika z contextu i metodę do ustawiania nowego użytkownika
   const [displayName, setDisplayName] = useState(user?.displayName || ''); // Stan dla displayName
   const [photoURL, setPhotoURL] = useState(user?.photoURL || ''); // Stan dla photoURL
   const [error, setError] = useState(''); // Stan błędów
@@ -22,6 +22,8 @@ export default function ProfilePage() {
       photoURL: photoURL,
     })
       .then(() => {
+        // Po pomyślnej aktualizacji profilu, aktualizujemy użytkownika w kontekście
+        setUser({ ...user, displayName, photoURL });
         console.log('Profile updated');
       })
       .catch((error) => {
