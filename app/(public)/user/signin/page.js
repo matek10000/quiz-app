@@ -11,6 +11,7 @@ export default function SignIn() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [timeoutError, setTimeoutError] = useState('');
   const { user } = useAuth(); // Pobieramy użytkownika z contextu autoryzacji
   const router = useRouter();
 
@@ -18,7 +19,7 @@ export default function SignIn() {
   useEffect(() => {
     if (user) {
       const urlParams = new URLSearchParams(window.location.search);
-      const returnUrl = urlParams.get('returnUrl') || '/user/profile'; // Domyślnie przekierowanie na stronę główną
+      const returnUrl = urlParams.get('returnUrl') || '/user/profile'; // Przekierowanie na stronę profilu
       router.push(returnUrl); // Jeśli użytkownik jest zalogowany, przekierowujemy go do returnUrl
     }
   }, [user, router]);
@@ -27,10 +28,21 @@ export default function SignIn() {
     e.preventDefault();
     setLoading(true);
     setError(''); // Resetujemy błędy
+    setTimeoutError(''); // Resetujemy komunikat o opóźnieniu
 
     try {
-      // Wykonanie logowania z FireBase
+      // Wykonanie logowania z Firebase
       const auth = await signInWithEmailAndPassword(getAuth(), email, password);
+
+      // Sprawdzanie, czy użytkownik potwierdził adres e-mail
+      if (!auth.user.emailVerified) {
+        // Jeśli email nie jest zweryfikowany, odswiezy strone (nie wiem czemu nie ma komunikatu)
+        setTimeoutError('Za chwilę nastąpi odświeżenie strony...');
+        setError('Proszę potwierdzić swój adres e-mail. Sprawdź skrzynkę pocztową.');
+        
+        await getAuth().signOut();
+        return;
+      }
 
       // Pobiera returnUrl z URL (jeśli istnieje)
       const urlParams = new URLSearchParams(window.location.search);
@@ -58,6 +70,14 @@ export default function SignIn() {
           </div>
         )}
         
+        {/* Wyświetlanie komunikatu o opóźnieniu */}
+        {timeoutError && (
+          <div className="mb-4 bg-yellow-100 text-yellow-800 p-3 rounded flex items-center">
+            <FaExclamationCircle className="mr-2" />
+            {timeoutError}
+          </div>
+        )}
+
         <div className="mb-4">
           <label htmlFor="email" className="block text-gray-700 mb-2">E-mail</label>
           <input
