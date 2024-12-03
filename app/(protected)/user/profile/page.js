@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/app/lib/AuthContext';
 import { updateProfile, reload } from 'firebase/auth';
 import { db } from '@/app/lib/firebase';
-import { setDoc, doc } from 'firebase/firestore';
+import { setDoc, doc, getDoc } from 'firebase/firestore';
 
 export default function ProfilePage() {
   const { user, setUser } = useAuth();
@@ -15,6 +15,29 @@ export default function ProfilePage() {
   const [zipCode, setZipCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true); // Status pobierania danych
+
+  useEffect(() => {
+    const fetchAddress = async () => {
+      try {
+        if (user) {
+          const snapshot = await getDoc(doc(db, 'users', user?.uid));
+          if (snapshot.exists()) {
+            const address = snapshot.data().address || {};
+            setStreet(address.street || '');
+            setCity(address.city || '');
+            setZipCode(address.zipCode || '');
+          }
+        }
+      } catch (err) {
+        console.error('Błąd podczas pobierania adresu:', err);
+      } finally {
+        setIsFetching(false); // Wyłącz status pobierania
+      }
+    };
+
+    fetchAddress();
+  }, [user]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -71,6 +94,7 @@ export default function ProfilePage() {
             onChange={(e) => setDisplayName(e.target.value)}
             className="w-full border border-gray-300 rounded p-2"
             required
+            disabled={isFetching}
           />
         </div>
 
@@ -82,6 +106,7 @@ export default function ProfilePage() {
             value={photoURL}
             onChange={(e) => setPhotoURL(e.target.value)}
             className="w-full border border-gray-300 rounded p-2"
+            disabled={isFetching}
           />
         </div>
 
@@ -93,6 +118,7 @@ export default function ProfilePage() {
             value={street}
             onChange={(e) => setStreet(e.target.value)}
             className="w-full border border-gray-300 rounded p-2"
+            disabled={isFetching}
           />
         </div>
 
@@ -104,6 +130,7 @@ export default function ProfilePage() {
             value={city}
             onChange={(e) => setCity(e.target.value)}
             className="w-full border border-gray-300 rounded p-2"
+            disabled={isFetching}
           />
         </div>
 
@@ -115,13 +142,14 @@ export default function ProfilePage() {
             value={zipCode}
             onChange={(e) => setZipCode(e.target.value)}
             className="w-full border border-gray-300 rounded p-2"
+            disabled={isFetching}
           />
         </div>
 
         <button
           type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-          disabled={loading}
+          disabled={loading || isFetching}
         >
           {loading ? 'Aktualizowanie...' : 'Zaktualizuj profil'}
         </button>
