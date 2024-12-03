@@ -1,55 +1,59 @@
-'use client';
+'use client'
 
 import { useState } from 'react';
 import { useAuth } from '@/app/lib/AuthContext';
-import { updateProfile } from 'firebase/auth'; // Importujemy metodę do aktualizacji profilu
+import { updateProfile, reload } from 'firebase/auth';
+import { db } from '@/app/lib/firebase';
+import { setDoc, doc } from 'firebase/firestore';
 
 export default function ProfilePage() {
-  const { user, setUser } = useAuth(); // Pobieramy użytkownika z contextu i metodę do ustawiania nowego użytkownika
-  const [displayName, setDisplayName] = useState(user?.displayName || ''); // Stan dla displayName
-  const [photoURL, setPhotoURL] = useState(user?.photoURL || ''); // Stan dla photoURL
-  const [error, setError] = useState(''); // Stan błędów
-  const [loading, setLoading] = useState(false); // Stan ładowania formularza
+  const { user, setUser } = useAuth();
+  const [displayName, setDisplayName] = useState(user?.displayName || '');
+  const [photoURL, setPhotoURL] = useState(user?.photoURL || '');
+  const [street, setStreet] = useState('');
+  const [city, setCity] = useState('');
+  const [zipCode, setZipCode] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  // Obsługuje zdarzenie submit formularza
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Ustawiamy stan ładowania
+    setLoading(true);
 
-    // Wykonanie aktualizacji profilu
-    updateProfile(user, {
-      displayName: displayName,
-      photoURL: photoURL,
-    })
-      .then(() => {
-        // Po pomyślnej aktualizacji profilu, aktualizujemy użytkownika w kontekście
-        setUser({ ...user, displayName, photoURL });
-        console.log('Profile updated');
-      })
-      .catch((error) => {
-        setError(error.message); // Ustawiamy błąd, jeśli wystąpił
-      })
-      .finally(() => {
-        setLoading(false); // Resetujemy stan ładowania
+    try {
+      // Aktualizacja profilu użytkownika
+      await updateProfile(user, {
+        displayName,
+        photoURL,
       });
+
+      // Zapis danych adresowych do Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        address: {
+          street,
+          city,
+          zipCode,
+        },
+      });
+
+      // Odświeżenie danych użytkownika
+      await reload(user);
+
+      // Zaktualizowanie użytkownika w kontekście
+      setUser({ ...user, displayName, photoURL });
+      console.log('Profil zaktualizowany pomyślnie');
+    } catch (err) {
+      setError(err.message);
+      console.error('Błąd podczas aktualizacji profilu:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
       <h1 className="text-4xl font-bold mb-6">Mój profil</h1>
-      
-      {/* Warunkowe renderowanie zdjęcia profilowego */}
-      {photoURL && (
-        <div className="mb-6">
-          <img
-            src={photoURL}
-            alt="Zdjęcie profilowe"
-            className="w-24 h-24 rounded-full border-2 border-gray-300"
-          />
-        </div>
-      )}
-      
-      {/* Wyświetlanie błędów, jeśli wystąpiły */}
+
       {error && (
         <div className="mb-4 bg-red-100 text-red-800 p-3 rounded flex items-center">
           <span className="mr-2">⚠️</span>
@@ -66,23 +70,10 @@ export default function ProfilePage() {
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             className="w-full border border-gray-300 rounded p-2"
-            placeholder="Wprowadź nazwę wyświetlaną"
             required
           />
         </div>
-        
-        <div className="mb-4">
-          <label htmlFor="email" className="block text-gray-700 mb-2">Adres e-mail</label>
-          <input
-            type="email"
-            id="email"
-            value={user?.email || ''}
-            disabled
-            className="w-full border border-gray-300 rounded p-2 bg-gray-200 cursor-not-allowed"
-            readOnly
-          />
-        </div>
-        
+
         <div className="mb-4">
           <label htmlFor="photoURL" className="block text-gray-700 mb-2">Adres zdjęcia profilowego</label>
           <input
@@ -91,7 +82,39 @@ export default function ProfilePage() {
             value={photoURL}
             onChange={(e) => setPhotoURL(e.target.value)}
             className="w-full border border-gray-300 rounded p-2"
-            placeholder="Wprowadź URL zdjęcia profilowego"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="street" className="block text-gray-700 mb-2">Ulica</label>
+          <input
+            type="text"
+            id="street"
+            value={street}
+            onChange={(e) => setStreet(e.target.value)}
+            className="w-full border border-gray-300 rounded p-2"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="city" className="block text-gray-700 mb-2">Miasto</label>
+          <input
+            type="text"
+            id="city"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            className="w-full border border-gray-300 rounded p-2"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="zipCode" className="block text-gray-700 mb-2">Kod pocztowy</label>
+          <input
+            type="text"
+            id="zipCode"
+            value={zipCode}
+            onChange={(e) => setZipCode(e.target.value)}
+            className="w-full border border-gray-300 rounded p-2"
           />
         </div>
 

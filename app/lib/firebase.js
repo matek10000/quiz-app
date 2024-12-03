@@ -2,6 +2,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getAnalytics, isSupported } from 'firebase/analytics';
+import { getFirestore } from "firebase/firestore";
 
 // Konfiguracja Firebase
 const firebaseConfig = {
@@ -20,6 +21,9 @@ const app = initializeApp(firebaseConfig);
 // Inicjalizacja Firebase Authentication
 const auth = getAuth(app);
 
+// Inicjacja bazy Firebase
+const db = getFirestore(app);
+
 // Inicjalizacja Analytics w środowisku przeglądarki
 let analytics = null;
 if (typeof window !== 'undefined') {
@@ -33,4 +37,5 @@ if (typeof window !== 'undefined') {
 }
 
 // Eksportujemy aplikację, Authentication i Analytics
-export { app, auth, analytics };
+export { app, auth, analytics, db };
+
