@@ -1,10 +1,9 @@
 'use client';
 
-import { AuthProvider } from './lib/AuthContext'; // Dodanie AuthProvider dla zarządzania autoryzacją
-import { FaUser, FaSignInAlt, FaSignOutAlt, FaHome, FaUserEdit, FaList } from 'react-icons/fa'; // Dodanie ikony listy
+import { AuthProvider } from './lib/AuthContext';
+import SidebarMenu from '@/app/components/user/SidebarMenu'; // Import nowego komponentu
 import './globals.css';
 import Link from 'next/link';
-import UserMenu from '@/app/components/user/UserMenu'; // Importujemy komponent UserMenu
 
 export default function RootLayout({ children }) {
   return (
@@ -13,53 +12,14 @@ export default function RootLayout({ children }) {
         <body className="h-screen">
           <div className="flex h-full">
             {/* Sidebar */}
-            <aside className="w-64 bg-gray-800 text-white flex flex-col p-4">
-              <h2 className="text-lg font-bold mb-4">Menu Główne</h2>
-              <nav className="flex flex-col gap-4">
-                <Link href="/" className="flex items-center gap-2 hover:bg-gray-700 p-2 rounded">
-                  <FaHome />
-                  <span>Strona Główna</span>
-                </Link>
-                <Link href="/user/signin" className="flex items-center gap-2 hover:bg-gray-700 p-2 rounded">
-                  <FaSignInAlt />
-                  <span>Zaloguj się</span>
-                </Link>
-                <Link href="/user/register" className="flex items-center gap-2 hover:bg-gray-700 p-2 rounded">
-                  <FaUser />
-                  <span>Załóż konto</span>
-                </Link>
-                <Link href="/user/profile" className="flex items-center gap-2 hover:bg-gray-700 p-2 rounded">
-                  <FaUserEdit />
-                  <span>Profil</span>
-                </Link>
-                <Link href="/quizzes" className="flex items-center gap-2 hover:bg-gray-700 p-2 rounded">
-                  <FaList />
-                  <span>Lista quizów</span>
-                </Link>
-                <Link href="/user/signout" className="flex items-center gap-2 hover:bg-gray-700 p-2 rounded">
-                  <FaSignOutAlt />
-                  <span>Wyloguj się</span>
-                </Link>
-              </nav>
-
-              {/* Dodajemy UserMenu na dole sidebaru */}
-              <div className="mt-auto">
-                <UserMenu />
-              </div>
-            </aside>
+            <SidebarMenu /> {/* Dynamiczne menu w zależności od zalogowania */}
 
             {/* Main Content */}
             <div className="flex-1 flex flex-col">
               {/* Top Bar */}
               <header className="bg-gray-100 border-b p-4 flex justify-between items-center">
-                <h1 className="text-lg font-semibold">QuizApp</h1>
-                <div className="space-x-4">
-                  <Link href="/user/signin" className="text-blue-600 hover:underline">
-                    Logowanie
-                  </Link>
-                  <Link href="/user/register" className="text-blue-600 hover:underline">
-                    Rejestracja
-                  </Link>
+              <div className="space-x-4">
+                <h1 className="text-lg font-semibold text-black">QuizApp</h1>
                 </div>
               </header>
 

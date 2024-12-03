@@ -3,7 +3,7 @@
 import { useAuth } from '@/app/lib/AuthContext';
 
 export default function UserMenu() {
-  const { user } = useAuth(); // Pobieramy użytkownika z contextu
+  const { user } = useAuth(); // pobranie stanu uzytkownika
 
   return (
     <div className="flex items-center space-x-4">
