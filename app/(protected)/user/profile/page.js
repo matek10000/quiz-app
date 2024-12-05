@@ -15,7 +15,7 @@ export default function ProfilePage() {
   const [zipCode, setZipCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isFetching, setIsFetching] = useState(true); // Status pobierania danych
+  const [isFetching, setIsFetching] = useState(true);
 
   useEffect(() => {
     const fetchAddress = async () => {
@@ -32,7 +32,7 @@ export default function ProfilePage() {
       } catch (err) {
         console.error('Błąd podczas pobierania adresu:', err);
       } finally {
-        setIsFetching(false); // Wyłącz status pobierania
+        setIsFetching(false);
       }
     };
 
@@ -77,6 +77,17 @@ export default function ProfilePage() {
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
       <h1 className="text-4xl font-bold mb-6">Mój profil</h1>
 
+      {/* Podgląd zdjęcia profilowego */}
+      {photoURL && (
+        <div className="mb-6">
+          <img
+            src={photoURL}
+            alt="Zdjęcie profilowe"
+            className="w-24 h-24 rounded-full border-2 border-gray-300"
+          />
+        </div>
+      )}
+
       {error && (
         <div className="mb-4 bg-red-100 text-red-800 p-3 rounded flex items-center">
           <span className="mr-2">⚠️</span>
@@ -110,6 +121,7 @@ export default function ProfilePage() {
           />
         </div>
 
+        {/* Pola adresowe */}
         <div className="mb-4">
           <label htmlFor="street" className="block text-gray-700 mb-2">Ulica</label>
           <input

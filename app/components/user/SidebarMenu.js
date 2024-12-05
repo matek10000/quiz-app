@@ -3,9 +3,10 @@
 import { useAuth } from '@/app/lib/AuthContext'; // Hook do zarządzania stanem użytkownika
 import { FaUser, FaSignInAlt, FaSignOutAlt, FaHome, FaUserEdit, FaList } from 'react-icons/fa';
 import Link from 'next/link';
+import UserMenu from './UserMenu'; // Komponent użytkownika z dynamicznym zdjęciem profilowym
 
 export default function SidebarMenu() {
-  const { user } = useAuth(); // pobranie info o userze
+  const { user } = useAuth(); // Pobranie informacji o użytkowniku
 
   return (
     <aside className="w-64 bg-gray-800 text-white flex flex-col p-4">
@@ -45,6 +46,13 @@ export default function SidebarMenu() {
           </>
         )}
       </nav>
+
+      {/* Sekcja użytkownika z dynamicznym zdjęciem profilowym */}
+      {user && (
+        <div className="mt-auto border-t border-gray-700 pt-4">
+          <UserMenu />
+        </div>
+      )}
     </aside>
   );
 }
