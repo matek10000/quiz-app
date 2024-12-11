@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
               {/* Top Bar */}
               <header className="bg-gray-100 border-b p-4 flex justify-between items-center">
               <div className="space-x-4">
-                <h1 className="text-lg font-semibold text-black">QuizApp</h1>
+                <span className="text-lg font-semibold text-black">QuizApp</span>
                 </div>
               </header>
 
