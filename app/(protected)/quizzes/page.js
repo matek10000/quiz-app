@@ -1,14 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/app/lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
+import { useRouter } from 'next/navigation';
 
 export default function QuizzesPage() {
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
-  // Pobieranie danych z Firestore
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
@@ -28,41 +29,26 @@ export default function QuizzesPage() {
     fetchQuizzes();
   }, []);
 
-  if (loading) {
-    return <div className="text-center mt-10">Ładowanie quizów...</div>;
-  }
+  const handleQuizStart = (quizId) => {
+    router.push(`/quizzes/${quizId}`);
+  };
 
   return (
     <div className="p-6">
-      <h1 className="text-4xl font-bold mb-4">Lista Quizów</h1>
-      {quizzes.length === 0 ? (
-        <p>Nie znaleziono żadnych quizów.</p>
+      <h1 className="text-2xl font-bold mb-4">Wybierz Quiz</h1>
+
+      {loading ? (
+        <p>Ładowanie quizów...</p>
       ) : (
-        <div className="space-y-6">
+        <div className="flex flex-col gap-4">
           {quizzes.map((quiz) => (
-            <div
+            <button
               key={quiz.id}
-              className="p-4 border border-gray-300 rounded shadow-md bg-white"
+              onClick={() => handleQuizStart(quiz.id)}
+              className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
             >
-              <h2 className="text-2xl font-semibold">{quiz.title}</h2>
-              <p className="text-gray-600">{quiz.description}</p>
-              <ul className="mt-4 space-y-2">
-                {quiz.questions.map((question, index) => (
-                  <li key={index} className="border-t pt-2">
-                    <p className="font-medium">Pytanie {index + 1}: {question.question}</p>
-                    <ol className="list-decimal ml-6 space-y-1">
-                      <li>Odpowiedź 1: {question.option1}</li>
-                      <li>Odpowiedź 2: {question.option2}</li>
-                      <li>Odpowiedź 3: {question.option3}</li>
-                      <li>Odpowiedź 4: {question.option4}</li>
-                    </ol>
-                    <p className="text-green-600">
-                      Poprawna odpowiedź: Odpowiedź {question.correct}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </div>
+              {quiz.title}
+            </button>
           ))}
         </div>
       )}
