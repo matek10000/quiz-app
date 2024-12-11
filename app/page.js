@@ -12,11 +12,17 @@ export default function HomePage() {
       <div className="flex flex-col items-center justify-center h-full">
         <h1 className="text-4xl font-bold mb-6">Witaj z powrotem, {user.email}!</h1>
         <div className="flex gap-4">
+        <Link
+            href="/quizzes/panel"
+            className="bg-red-600 text-white py-3 px-6 rounded hover:bg-red-700"
+          >
+            Edycja Quizów
+          </Link>
           <Link
             href="/quizzes"
             className="bg-blue-600 text-white py-3 px-6 rounded hover:bg-blue-700"
           >
-            Lista quizów
+            Rozwiąż Quiz!
           </Link>
           <Link
             href="/user/profile"
