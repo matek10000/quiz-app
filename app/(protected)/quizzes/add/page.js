@@ -12,15 +12,24 @@ export default function AddQuiz() {
   const router = useRouter();
 
   const handleAddQuestion = () => {
-    setQuestions([
-      ...questions,
-      { question: '', option1: '', option2: '', option3: '', option4: '', correct: 1 },
-    ]);
+    setQuestions([...questions, { question: '', options: {}, type: 'single' }]);
   };
 
   const handleUpdateQuestion = (index, field, value) => {
     const updatedQuestions = [...questions];
     updatedQuestions[index][field] = value;
+    setQuestions(updatedQuestions);
+  };
+
+  const handleUpdateOption = (questionIndex, optionKey, field, value) => {
+    const updatedQuestions = [...questions];
+    if (!updatedQuestions[questionIndex].options) {
+      updatedQuestions[questionIndex].options = {};
+    }
+    if (!updatedQuestions[questionIndex].options[optionKey]) {
+      updatedQuestions[questionIndex].options[optionKey] = { content: '', isCorrect: false };
+    }
+    updatedQuestions[questionIndex].options[optionKey][field] = value;
     setQuestions(updatedQuestions);
   };
 
@@ -37,7 +46,7 @@ export default function AddQuiz() {
     setLoading(true);
 
     try {
-      await addDoc(collection(db, 'quizzes'), { title, questions });
+      await addDoc(collection(db, 'quiz'), { title, questions });
       alert('Quiz został dodany!');
       router.push('/quizzes/panel'); // Przekierowanie do Panelu Quizzów
     } catch (error) {
@@ -50,6 +59,7 @@ export default function AddQuiz() {
   return (
     <div className="max-w-4xl mx-auto mt-10 p-4 bg-white shadow rounded">
       <h1 className="text-2xl font-bold mb-6">Dodaj Quiz</h1>
+
       <div className="mb-4">
         <label className="block mb-2 text-gray-700">Tytuł Quizu</label>
         <input
@@ -60,44 +70,62 @@ export default function AddQuiz() {
           placeholder="Podaj tytuł quizu"
         />
       </div>
+
       <div className="mb-4">
         <h2 className="text-lg font-bold mb-2">Pytania</h2>
-        {questions.map((q, index) => (
-          <div key={index} className="mb-4 border rounded p-4">
+
+        {questions.map((q, questionIndex) => (
+          <div key={questionIndex} className="border p-4 rounded mb-4">
             <input
               type="text"
               placeholder="Treść pytania"
               value={q.question}
-              onChange={(e) => handleUpdateQuestion(index, 'question', e.target.value)}
+              onChange={(e) => handleUpdateQuestion(questionIndex, 'question', e.target.value)}
               className="w-full border mb-2 p-2"
             />
-            {['option1', 'option2', 'option3', 'option4'].map((option, i) => (
-              <input
-                key={option}
-                type="text"
-                placeholder={`Odpowiedź ${i + 1}`}
-                value={q[option]}
-                onChange={(e) => handleUpdateQuestion(index, option, e.target.value)}
-                className="w-full border mb-2 p-2"
-              />
+
+            <label className="block mb-2 text-gray-700">Typ pytania</label>
+            <select
+              value={q.type}
+              onChange={(e) => handleUpdateQuestion(questionIndex, 'type', e.target.value)}
+              className="w-full border mb-2 p-2"
+            >
+              <option value="single">Pojedynczy wybór</option>
+              <option value="multi">Wielokrotny wybór</option>
+            </select>
+
+            <h3 className="text-md font-bold mb-2">Odpowiedzi</h3>
+
+            {['option1', 'option2', 'option3', 'option4'].map((optionKey, optionIndex) => (
+              <div key={optionKey} className="flex items-center mb-2">
+                <input
+                  type="text"
+                  placeholder={`Odpowiedź ${optionIndex + 1}`}
+                  value={q.options?.[optionKey]?.content || ''}
+                  onChange={(e) => handleUpdateOption(questionIndex, optionKey, 'content', e.target.value)}
+                  className="w-full border p-2 mr-2"
+                />
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={q.options?.[optionKey]?.isCorrect || false}
+                    onChange={(e) => handleUpdateOption(questionIndex, optionKey, 'isCorrect', e.target.checked)}
+                    className="mr-2"
+                  />
+                  Poprawna
+                </label>
+              </div>
             ))}
-            <input
-              type="number"
-              min="1"
-              max="4"
-              value={q.correct}
-              onChange={(e) => handleUpdateQuestion(index, 'correct', Number(e.target.value))}
-              className="w-full border mb-2 p-2"
-              placeholder="Poprawna odpowiedź (1-4)"
-            />
+
             <button
-              onClick={() => handleRemoveQuestion(index)}
+              onClick={() => handleRemoveQuestion(questionIndex)}
               className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600"
             >
               Usuń pytanie
             </button>
           </div>
         ))}
+
         <button
           onClick={handleAddQuestion}
           className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
@@ -105,6 +133,7 @@ export default function AddQuiz() {
           Dodaj pytanie
         </button>
       </div>
+
       <button
         onClick={handleSaveQuiz}
         className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"

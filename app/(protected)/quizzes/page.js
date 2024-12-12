@@ -13,7 +13,7 @@ export default function QuizzesPage() {
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'quizzes'));
+        const querySnapshot = await getDocs(collection(db, 'quiz')); // Poprawiona nazwa kolekcji na `quiz`
         const quizzesData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
@@ -39,7 +39,7 @@ export default function QuizzesPage() {
 
       {loading ? (
         <p>Ładowanie quizów...</p>
-      ) : (
+      ) : quizzes.length > 0 ? (
         <div className="flex flex-col gap-4">
           {quizzes.map((quiz) => (
             <button
@@ -51,6 +51,9 @@ export default function QuizzesPage() {
             </button>
           ))}
         </div>
+      ) : (
+        // Wyświetlanie informacji o braku quizów
+        <p>Brak dostępnych quizów.</p>
       )}
     </div>
   );

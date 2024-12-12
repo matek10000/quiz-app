@@ -12,7 +12,7 @@ export default function QuizPanel() {
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'quizzes'));
+        const querySnapshot = await getDocs(collection(db, 'quiz'));
         const fetchedQuizzes = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
@@ -34,7 +34,7 @@ export default function QuizPanel() {
       confirm('Jesteś pewien? To usunie wszystkie pytania i odpowiedzi.')
     ) {
       try {
-        await deleteDoc(doc(db, 'quizzes', quizId));
+        await deleteDoc(doc(db, 'quiz', quizId));
         setQuizzes(quizzes.filter((quiz) => quiz.id !== quizId));
       } catch (error) {
         console.error('Błąd podczas usuwania quizu:', error);
