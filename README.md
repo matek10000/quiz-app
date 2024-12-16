@@ -24,7 +24,7 @@ QuizApp to interaktywna aplikacja webowa zbudowana w frameworku **Next.js**, wyk
 
 ### 🔹 **Bezpieczeństwo**
 - Ochrona dostępu do niektórych stron i funkcji tylko dla zalogowanych użytkowników.
-- Reguły Firestore ograniczające dostęp do bazy danych (opisane w sekcji [Reguły Firestore](#reguły-firestore)).
+- Reguły Firestore ograniczające dostęp do bazy danych.
 
 ### 🔹 **Inne**
 - **System nawigacji** z menu bocznym oraz linkami do sekcji dla zalogowanych i niezalogowanych użytkowników.
@@ -41,7 +41,6 @@ QuizApp to interaktywna aplikacja webowa zbudowana w frameworku **Next.js**, wyk
 
 ## ⚙️ **Instalacja**
 
-### 1️⃣ **Klonowanie repozytorium**
 ```bash
 git clone https://github.com/matek10000/quiz-app.git
 cd quiz-app
