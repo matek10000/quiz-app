@@ -4,16 +4,50 @@ import { useEffect, useState } from 'react';
 import { db } from '@/app/lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useRouter, useParams } from 'next/navigation';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 export default function EditQuiz() {
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [title, setTitle] = useState('');
   const [questions, setQuestions] = useState([]);
   const router = useRouter();
   const params = useParams();
   const quizId = params?.id;
 
+  // Sprawdzanie uprawnień admina
+  useEffect(() => {
+    const checkAdminPermissions = async () => {
+      const auth = getAuth();
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          try {
+            const userRef = doc(db, 'users', user.uid);
+            const userDoc = await getDoc(userRef);
+            if (userDoc.exists() && userDoc.data().isAdmin) {
+              setIsAdmin(true);
+            } else {
+              alert('Nie masz uprawnień administratora!');
+              router.push('/');
+            }
+          } catch (error) {
+            console.error('Błąd podczas sprawdzania uprawnień:', error);
+            router.push('/');
+          } finally {
+            setAuthLoading(false);
+          }
+        } else {
+          router.push('/user/signin');
+        }
+      });
+    };
+
+    checkAdminPermissions();
+  }, [router]);
+
+  // Pobieranie quizu
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
@@ -56,18 +90,6 @@ export default function EditQuiz() {
     setQuestions(updatedQuestions);
   };
 
-  const handleUpdateOption = (questionIndex, optionKey, field, value) => {
-    const updatedQuestions = [...questions];
-    if (!updatedQuestions[questionIndex].options) {
-      updatedQuestions[questionIndex].options = {};
-    }
-    if (!updatedQuestions[questionIndex].options[optionKey]) {
-      updatedQuestions[questionIndex].options[optionKey] = { content: '', isCorrect: false };
-    }
-    updatedQuestions[questionIndex].options[optionKey][field] = value;
-    setQuestions(updatedQuestions);
-  };
-
   const handleAddField = (questionIndex) => {
     const updatedQuestions = [...questions];
     updatedQuestions[questionIndex].fields.push({ key: `field${Date.now()}`, label: '', correct: '' });
@@ -84,9 +106,9 @@ export default function EditQuiz() {
     setQuestions(questions.filter((_, i) => i !== index));
   };
 
-  if (loading) {
-    return <p>Ładowanie quizu...</p>;
-  }
+  if (authLoading) return <p>Sprawdzanie uprawnień...</p>;
+  if (!isAdmin) return <p>Brak uprawnień do dostępu do tej strony.</p>;
+  if (loading) return <p>Ładowanie quizu...</p>;
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-4 bg-white shadow rounded">
@@ -126,33 +148,6 @@ export default function EditQuiz() {
               <option value="fill">Uzupełnianie pól</option>
             </select>
 
-            {/* Opcje dla Single i Multi */}
-            {q.type !== 'fill' && (
-              <div>
-                <h3 className="text-md font-bold mb-2">Odpowiedzi</h3>
-                {['option1', 'option2', 'option3', 'option4'].map((optionKey, optionIndex) => (
-                  <div key={optionKey} className="flex items-center mb-2">
-                    <input
-                      type="text"
-                      placeholder={`Odpowiedź ${optionIndex + 1}`}
-                      value={q.options?.[optionKey]?.content || ''}
-                      onChange={(e) => handleUpdateOption(questionIndex, optionKey, 'content', e.target.value)}
-                      className="w-full border p-2 mr-2"
-                    />
-                    <label className="flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={q.options?.[optionKey]?.isCorrect || false}
-                        onChange={(e) => handleUpdateOption(questionIndex, optionKey, 'isCorrect', e.target.checked)}
-                        className="mr-2"
-                      />
-                      Poprawna
-                    </label>
-                  </div>
-                ))}
-              </div>
-            )}
-
             {/* Pola dla typu Fill */}
             {q.type === 'fill' && (
               <div>
@@ -163,18 +158,14 @@ export default function EditQuiz() {
                       type="text"
                       placeholder="Etykieta pola"
                       value={field.label}
-                      onChange={(e) =>
-                        handleUpdateField(questionIndex, fieldIndex, 'label', e.target.value)
-                      }
+                      onChange={(e) => handleUpdateField(questionIndex, fieldIndex, 'label', e.target.value)}
                       className="w-full border p-2 rounded"
                     />
                     <input
                       type="text"
                       placeholder="Poprawna odpowiedź"
                       value={field.correct}
-                      onChange={(e) =>
-                        handleUpdateField(questionIndex, fieldIndex, 'correct', e.target.value)
-                      }
+                      onChange={(e) => handleUpdateField(questionIndex, fieldIndex, 'correct', e.target.value)}
                       className="w-full border p-2 rounded"
                     />
                   </div>
@@ -187,13 +178,6 @@ export default function EditQuiz() {
                 </button>
               </div>
             )}
-
-            <button
-              onClick={() => handleRemoveQuestion(questionIndex)}
-              className="mt-4 bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600"
-            >
-              Usuń pytanie
-            </button>
           </div>
         ))}
 

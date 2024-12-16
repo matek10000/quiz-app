@@ -2,13 +2,57 @@
 
 import { useEffect, useState } from 'react';
 import { db } from '@/app/lib/firebase';
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, getDoc } from 'firebase/firestore';
 import Link from 'next/link';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 
 export default function QuizPanel() {
   const [quizzes, setQuizzes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true); // Sprawdzanie uprawnień użytkownika
+  const [isAdmin, setIsAdmin] = useState(false); // Flaga dla uprawnień admina
+  const router = useRouter();
 
+  // Sprawdzenie, czy użytkownik jest adminem
+  useEffect(() => {
+    const checkAdminPermissions = async () => {
+      const auth = getAuth();
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          try {
+            const userRef = doc(db, 'users', user.uid);
+            const userDoc = await getDoc(userRef);
+            if (userDoc.exists()) {
+              const userData = userDoc.data();
+              if (userData.isAdmin) {
+                setIsAdmin(true);
+              } else {
+                alert('Nie masz uprawnień administratora!');
+                router.push('/');
+              }
+            } else {
+              alert('Nie znaleziono danych użytkownika!');
+              router.push('/');
+            }
+          } catch (error) {
+            console.error('Błąd podczas sprawdzania uprawnień użytkownika:', error);
+            alert('Wystąpił problem z dostępem.');
+            router.push('/');
+          } finally {
+            setAuthLoading(false);
+          }
+        } else {
+          alert('Musisz być zalogowany, aby uzyskać dostęp do tej strony.');
+          router.push('/user/signin');
+        }
+      });
+    };
+
+    checkAdminPermissions();
+  }, [router]);
+
+  // Pobieranie danych quizów
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
@@ -29,10 +73,7 @@ export default function QuizPanel() {
   }, []);
 
   const handleDeleteQuiz = async (quizId) => {
-    if (
-      confirm('Czy na pewno chcesz usunąć ten quiz?') &&
-      confirm('Jesteś pewien? To usunie wszystkie pytania i odpowiedzi.')
-    ) {
+    if (confirm('Czy na pewno chcesz usunąć ten quiz?')) {
       try {
         await deleteDoc(doc(db, 'quiz', quizId));
         setQuizzes(quizzes.filter((quiz) => quiz.id !== quizId));
@@ -42,9 +83,18 @@ export default function QuizPanel() {
     }
   };
 
-  if (loading) {
-    return <p>Ładowanie quizów...</p>;
+  // Ekran ładowania uprawnień
+  if (authLoading) {
+    return <p>Sprawdzanie uprawnień...</p>;
   }
+
+  // Ekran braku uprawnień
+  if (!isAdmin) {
+    return <p>Brak uprawnień do dostępu do tej strony.</p>;
+  }
+
+  // Ekran ładowania quizów
+  if (loading) return <p>Ładowanie quizów...</p>;
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-4 bg-white shadow rounded">
