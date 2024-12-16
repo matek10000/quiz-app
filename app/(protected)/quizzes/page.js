@@ -13,7 +13,7 @@ export default function QuizzesPage() {
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'quiz')); // Poprawiona nazwa kolekcji na `quiz`
+        const querySnapshot = await getDocs(collection(db, 'quiz'));
         const quizzesData = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
@@ -33,6 +33,10 @@ export default function QuizzesPage() {
     router.push(`/quizzes/${quizId}`);
   };
 
+  const handleTop10 = (quizId) => {
+    router.push(`/quizzes/top10/${quizId}`);
+  };
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Wybierz Quiz</h1>
@@ -42,17 +46,26 @@ export default function QuizzesPage() {
       ) : quizzes.length > 0 ? (
         <div className="flex flex-col gap-4">
           {quizzes.map((quiz) => (
-            <button
-              key={quiz.id}
-              onClick={() => handleQuizStart(quiz.id)}
-              className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
-            >
-              {quiz.title}
-            </button>
+            <div key={quiz.id} className="flex items-center justify-between bg-gray-100 p-4 rounded">
+              <span className="text-lg font-semibold">{quiz.title}</span>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleQuizStart(quiz.id)}
+                  className="bg-blue-600 text-white py-1 px-3 rounded hover:bg-blue-700"
+                >
+                  Rozpocznij
+                </button>
+                <button
+                  onClick={() => handleTop10(quiz.id)}
+                  className="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600"
+                >
+                  Top 10
+                </button>
+              </div>
+            </div>
           ))}
         </div>
       ) : (
-        // Wyświetlanie informacji o braku quizów
         <p>Brak dostępnych quizów.</p>
       )}
     </div>

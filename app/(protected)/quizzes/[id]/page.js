@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { db } from '@/app/lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, addDoc } from 'firebase/firestore';
 import { useParams } from 'next/navigation';
+import { useAuth } from '@/app/lib/AuthContext'; // Import AuthContext do obsługi użytkownika
 
 export default function QuizPage() {
   const params = useParams();
-  const quizId = params?.id;
+  const quizId = params?.id; // Identyfikator quizu
+  const { user } = useAuth(); // Zalogowany użytkownik
   const [quiz, setQuiz] = useState(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState({});
@@ -61,7 +63,7 @@ export default function QuizPage() {
     });
   };
 
-  const handleNextQuestion = () => {
+  const handleNextQuestion = async () => {
     const currentQuestion = quiz.questions[currentQuestionIndex];
     const userAnswers = selectedOptions[currentQuestionIndex] || {};
   
@@ -84,7 +86,6 @@ export default function QuizPage() {
         {}
       );
   
-      // Porównanie ignorujące wielkość liter
       isCorrect = Object.entries(correctFields).every(
         ([label, correctAnswer]) =>
           userAnswers[label]?.toLowerCase() === correctAnswer.toLowerCase()
@@ -99,9 +100,21 @@ export default function QuizPage() {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     } else {
       setFinished(true);
+      if (user) {
+        try {
+          await addDoc(collection(db, 'scores'), {
+            userId: user.uid,
+            quizId: quizId,
+            score: score + (isCorrect ? 1 : 0), // Dodaj bieżący wynik
+          });
+          console.log('Wynik zapisany!');
+        } catch (error) {
+          console.error('Błąd zapisywania wyniku:', error);
+        }
+      }
     }
   };
-  
+
   if (!quiz) {
     return <p>Ładowanie quizu...</p>;
   }
@@ -137,7 +150,6 @@ export default function QuizPage() {
             {currentQuestion?.type === 'fill' && 'Typ pytania: Uzupełnianie pól'}
           </p>
 
-          {/* Single i Multi */}
           {['single', 'multi'].includes(currentQuestion?.type) && (
             <div className="flex flex-col gap-2">
               {Object.entries(currentQuestion.options).map(([key, option]) => (
@@ -156,7 +168,6 @@ export default function QuizPage() {
             </div>
           )}
 
-          {/* Fill */}
           {currentQuestion?.type === 'fill' && (
             <div className="flex flex-col gap-2">
               {currentQuestion.fields.map((field) => (
