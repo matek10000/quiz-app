@@ -12,7 +12,7 @@ export default function AddQuiz() {
   const router = useRouter();
 
   const handleAddQuestion = () => {
-    setQuestions([...questions, { question: '', options: {}, type: 'single' }]);
+    setQuestions([...questions, { question: '', options: {}, fields: [], type: 'single' }]);
   };
 
   const handleUpdateQuestion = (index, field, value) => {
@@ -33,6 +33,18 @@ export default function AddQuiz() {
     setQuestions(updatedQuestions);
   };
 
+  const handleAddField = (questionIndex) => {
+    const updatedQuestions = [...questions];
+    updatedQuestions[questionIndex].fields.push({ key: `field${Date.now()}`, label: '', correct: '' });
+    setQuestions(updatedQuestions);
+  };
+
+  const handleUpdateField = (questionIndex, fieldIndex, fieldKey, value) => {
+    const updatedQuestions = [...questions];
+    updatedQuestions[questionIndex].fields[fieldIndex][fieldKey] = value;
+    setQuestions(updatedQuestions);
+  };
+
   const handleRemoveQuestion = (index) => {
     setQuestions(questions.filter((_, i) => i !== index));
   };
@@ -48,7 +60,7 @@ export default function AddQuiz() {
     try {
       await addDoc(collection(db, 'quiz'), { title, questions });
       alert('Quiz został dodany!');
-      router.push('/quizzes/panel'); // Przekierowanie do Panelu Quizzów
+      router.push('/quizzes/panel');
     } catch (error) {
       console.error('Błąd podczas dodawania quizu:', error);
     } finally {
@@ -92,34 +104,74 @@ export default function AddQuiz() {
             >
               <option value="single">Pojedynczy wybór</option>
               <option value="multi">Wielokrotny wybór</option>
+              <option value="fill">Uzupełnianie pól</option>
             </select>
 
-            <h3 className="text-md font-bold mb-2">Odpowiedzi</h3>
-
-            {['option1', 'option2', 'option3', 'option4'].map((optionKey, optionIndex) => (
-              <div key={optionKey} className="flex items-center mb-2">
-                <input
-                  type="text"
-                  placeholder={`Odpowiedź ${optionIndex + 1}`}
-                  value={q.options?.[optionKey]?.content || ''}
-                  onChange={(e) => handleUpdateOption(questionIndex, optionKey, 'content', e.target.value)}
-                  className="w-full border p-2 mr-2"
-                />
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={q.options?.[optionKey]?.isCorrect || false}
-                    onChange={(e) => handleUpdateOption(questionIndex, optionKey, 'isCorrect', e.target.checked)}
-                    className="mr-2"
-                  />
-                  Poprawna
-                </label>
+            {/* Opcje dla Single i Multi */}
+            {q.type !== 'fill' && (
+              <div>
+                <h3 className="text-md font-bold mb-2">Odpowiedzi</h3>
+                {['option1', 'option2', 'option3', 'option4'].map((optionKey, optionIndex) => (
+                  <div key={optionKey} className="flex items-center mb-2">
+                    <input
+                      type="text"
+                      placeholder={`Odpowiedź ${optionIndex + 1}`}
+                      value={q.options?.[optionKey]?.content || ''}
+                      onChange={(e) => handleUpdateOption(questionIndex, optionKey, 'content', e.target.value)}
+                      className="w-full border p-2 mr-2"
+                    />
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={q.options?.[optionKey]?.isCorrect || false}
+                        onChange={(e) => handleUpdateOption(questionIndex, optionKey, 'isCorrect', e.target.checked)}
+                        className="mr-2"
+                      />
+                      Poprawna
+                    </label>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
+
+            {/* Pola dla typu Fill */}
+            {q.type === 'fill' && (
+              <div>
+                <h3 className="text-md font-bold mb-2">Pola do uzupełnienia</h3>
+                {q.fields.map((field, fieldIndex) => (
+                  <div key={field.key} className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      placeholder="Etykieta pola"
+                      value={field.label}
+                      onChange={(e) =>
+                        handleUpdateField(questionIndex, fieldIndex, 'label', e.target.value)
+                      }
+                      className="w-full border p-2 rounded"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Poprawna odpowiedź"
+                      value={field.correct}
+                      onChange={(e) =>
+                        handleUpdateField(questionIndex, fieldIndex, 'correct', e.target.value)
+                      }
+                      className="w-full border p-2 rounded"
+                    />
+                  </div>
+                ))}
+                <button
+                  onClick={() => handleAddField(questionIndex)}
+                  className="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600"
+                >
+                  Dodaj pole
+                </button>
+              </div>
+            )}
 
             <button
               onClick={() => handleRemoveQuestion(questionIndex)}
-              className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600"
+              className="mt-4 bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600"
             >
               Usuń pytanie
             </button>
