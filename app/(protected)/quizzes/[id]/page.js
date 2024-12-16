@@ -64,9 +64,9 @@ export default function QuizPage() {
   const handleNextQuestion = () => {
     const currentQuestion = quiz.questions[currentQuestionIndex];
     const userAnswers = selectedOptions[currentQuestionIndex] || {};
-
+  
     let isCorrect = false;
-
+  
     if (currentQuestion.type === 'single') {
       const selectedOption = currentQuestion.options[userAnswers[0]];
       isCorrect = selectedOption?.isCorrect;
@@ -74,7 +74,7 @@ export default function QuizPage() {
       const correctOptions = Object.entries(currentQuestion.options)
         .filter(([_, option]) => option.isCorrect)
         .map(([key]) => key);
-
+  
       isCorrect =
         userAnswers.length === correctOptions.length &&
         userAnswers.every((option) => correctOptions.includes(option));
@@ -83,23 +83,25 @@ export default function QuizPage() {
         (acc, field) => ({ ...acc, [field.label]: field.correct }),
         {}
       );
-
+  
+      // Porównanie ignorujące wielkość liter
       isCorrect = Object.entries(correctFields).every(
-        ([label, correctAnswer]) => userAnswers[label] === correctAnswer
+        ([label, correctAnswer]) =>
+          userAnswers[label]?.toLowerCase() === correctAnswer.toLowerCase()
       );
     }
-
+  
     if (isCorrect) {
       setScore((prevScore) => prevScore + 1);
     }
-
+  
     if (currentQuestionIndex < quiz.questions.length - 1) {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     } else {
       setFinished(true);
     }
   };
-
+  
   if (!quiz) {
     return <p>Ładowanie quizu...</p>;
   }
