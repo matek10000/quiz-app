@@ -10,8 +10,7 @@ QuizApp to interaktywna aplikacja webowa zbudowana w frameworku **Next.js**, wyk
 ### 🔹 Użytkownik
 - **Rejestracja użytkownika** na podstawie e-maila i hasła.
 - **Logowanie użytkownika** z weryfikacją adresu e-mail.
-- **Profil użytkownika**:
-  - Edycja danych użytkownika, w tym nazwa wyświetlana i zdjęcie profilowe.
+- **Edycja danych użytkownika** w tym nazwa wyświetlana i zdjęcie profilowe.
 
 ---
 
@@ -24,7 +23,6 @@ QuizApp to interaktywna aplikacja webowa zbudowana w frameworku **Next.js**, wyk
   - **Pojedynczy wybór** *(Single Choice)*
   - **Wielokrotny wybór** *(Multiple Choice)*
   - **Uzupełnianie pól** *(Fill in the Fields)*
-    - Możliwość dodawania dynamicznych pól oraz przypisywania poprawnych odpowiedzi.
 - **Rozwiązywanie quizów**:
   - Użytkownik może rozwiązywać quizy z natychmiastowym obliczeniem wyniku.
 - **Panel quizów**:
