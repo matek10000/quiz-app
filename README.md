@@ -5,31 +5,53 @@ QuizApp to interaktywna aplikacja webowa zbudowana w frameworku **Next.js**, wyk
 
 ---
 
-## 🚀 **Funkcjonalności**
+## 🚀 Funkcjonalności
 
-### 🔹 **Użytkownik**
-- **Rejestracja** użytkownika na podstawie e-maila i hasła.
-- **Logowanie** użytkownika z weryfikacją adresu e-mail.
-- **Profil użytkownika**: edycja danych użytkownika, w tym nazwa wyświetlana i zdjęcie profilowe.
-- **Zarządzanie danymi użytkownika**: dane użytkownika są przechowywane w bazie Firestore w kolekcji `users`.
+### 🔹 Użytkownik
+- **Rejestracja użytkownika** na podstawie e-maila i hasła.
+- **Logowanie użytkownika** z weryfikacją adresu e-mail.
+- **Profil użytkownika**:
+  - Edycja danych użytkownika, w tym nazwa wyświetlana i zdjęcie profilowe.
 
-### 🔹 **Quizy**
-- **Dodawanie quizów**: administrator może dodawać nowe quizy.
-- **Edycja quizów**: możliwość edycji pytań i odpowiedzi.
+---
+
+### 🔹 Quizy
+- **Dodawanie quizów**:
+  - Administrator może tworzyć nowe quizy z różnymi typami pytań.
+- **Edycja quizów**:
+  - Możliwość edycji tytułu quizu, pytań oraz odpowiedzi.
 - **Rodzaje pytań**:
-  - **Pojedynczy wybór (Single Choice)**
-  - **Wielokrotny wybór (Multiple Choice)**
-- **Rozwiązywanie quizów**: użytkownik może rozwiązywać quizy z natychmiastową informacją zwrotną o wyniku.
-- **Panel quizów**: dostęp do listy wszystkich quizów, ich edycji i usuwania.
+  - **Pojedynczy wybór** *(Single Choice)*
+  - **Wielokrotny wybór** *(Multiple Choice)*
+  - **Uzupełnianie pól** *(Fill in the Fields)*
+    - Możliwość dodawania dynamicznych pól oraz przypisywania poprawnych odpowiedzi.
+- **Rozwiązywanie quizów**:
+  - Użytkownik może rozwiązywać quizy z natychmiastowym obliczeniem wyniku.
+- **Panel quizów**:
+  - Dostęp do listy wszystkich quizów.
+  - Edycja i usuwanie istniejących quizów (tylko dla administratorów).
 
-### 🔹 **Bezpieczeństwo**
-- Ochrona dostępu do niektórych stron i funkcji tylko dla zalogowanych użytkowników.
-- Reguły Firestore ograniczające dostęp do bazy danych.
+---
 
-### 🔹 **Inne**
-- **System nawigacji** z menu bocznym oraz linkami do sekcji dla zalogowanych i niezalogowanych użytkowników.
-- **Responsywność**: dostosowanie układu do różnych rozdzielczości.
-- **Obsługa błędów** (np. brak strony - 404).
+### 🔹 Bezpieczeństwo
+- **Ochrona dostępu**:
+  - Strony i funkcje, takie jak panel quizów, edycja czy dodawanie quizów, dostępne tylko dla użytkowników z uprawnieniami administratora.
+- **Reguły Firestore**:
+  - Ograniczenie dostępu do bazy danych na podstawie uprawnień.
+  - Tylko autoryzowani użytkownicy mogą wykonywać zapytania na Firestore.
+
+---
+
+### 🔹 Inne
+- **System nawigacji**:
+  - Menu boczne z dynamicznymi linkami dla zalogowanych i niezalogowanych użytkowników.
+- **Top10 wyników quizów**:
+  - Wyświetlanie najlepszych wyników graczy dla każdego quizu wraz z ich nazwą użytkownika i zdjęciem profilowym.
+  - Wyświetlanie pozycji użytkownika spoza Top10.
+- **Responsywność**:
+  - Dostosowanie układu aplikacji do różnych rozdzielczości urządzeń.
+- **Obsługa błędów**:
+  - Informowanie użytkownika o błędach, np. brak uprawnień lub brak strony *(404)*.
 
 ---
 
