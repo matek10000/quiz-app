@@ -1,5 +1,6 @@
 
-# QuizApp [![made-with-javascript](https://img.shields.io/badge/Made%20with-JavaScript-1f425f.svg)](https://www.javascript.com)
+# QuizApp
+[![made-with-javascript](https://img.shields.io/badge/Made%20with-JavaScript-1f425f.svg)](https://www.javascript.com)
 ## https://matek10000-quizapp.netlify.app/ ##
 QuizApp to interaktywna aplikacja webowa zbudowana w frameworku **Next.js**, wykorzystująca **Firebase** do autoryzacji użytkowników oraz **Tailwind CSS** do stylizacji. Aplikacja oferuje rozbudowany system zarządzania quizami, w tym ich dodawanie, edytowanie, usuwanie oraz rozwiązywanie. Posiada system użytkowników z rejestracją, logowaniem oraz indywidualnymi profilami.
 
@@ -82,5 +83,5 @@ Masz pytania dotyczące QuizApp? Skontaktuj się ze mną!
 
 ---
 
-## ⚠️ **Licencja** [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
-Projekt dostępny na licencji **MIT**. Możesz go używać, kopiować i modyfikować w celach osobistych i komercyjnych.
+## ⚠️ **Licencja**
+Projekt dostępny na licencji **MIT**. Możesz go używać, kopiować i modyfikować w celach osobistych i komercyjnych. [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
