@@ -82,5 +82,5 @@ Masz pytania dotyczące QuizApp? Skontaktuj się ze mną!
 
 ---
 
-## ⚠️ **Licencja**
+## ⚠️ **Licencja** [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 Projekt dostępny na licencji **MIT**. Możesz go używać, kopiować i modyfikować w celach osobistych i komercyjnych.
